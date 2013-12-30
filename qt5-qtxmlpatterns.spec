@@ -38,6 +38,9 @@ Qt5 XmlPatterns - development files.
 %package doc
 Summary:	The Qt5 XmlPatterns - docs
 Group:		Documentation
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description doc
 Qt5 XmlPatterns - documentation.
@@ -45,6 +48,9 @@ Qt5 XmlPatterns - documentation.
 %package examples
 Summary:	Qt5 XmlPatterns examples
 Group:		X11/Development/Libraries
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
 
 %description examples
 Qt5 XmlPatterns - examples.
