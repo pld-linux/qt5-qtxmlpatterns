@@ -1,7 +1,12 @@
 # TODO:
 # - cleanup
+#
+# Conditional build:
+%bcond_without	qch	# documentation in QCH format
 
 %define		orgname		qtxmlpatterns
+%define		qtbase_ver	%{version}
+%define		qttools_ver	%{version}
 Summary:	The Qt5 XmlPatterns
 Name:		qt5-%{orgname}
 Version:	5.2.0
@@ -11,49 +16,104 @@ Group:		X11/Libraries
 Source0:	http://download.qt-project.org/official_releases/qt/5.2/%{version}/submodules/%{orgname}-opensource-src-%{version}.tar.xz
 # Source0-md5:	7c3e94cd04603c3f81e50d47daf5bbc7
 URL:		http://qt-project.org/
-BuildRequires:	qt5-qtbase-devel = %{version}
-BuildRequires:	qt5-qttools-devel = %{version}
+BuildRequires:	qt5-qtbase-devel >= %{qtbase_ver}
+%if %{with qch}
+BuildRequires:	qt5-assistant >= %{qttools_ver}
+%endif
+BuildRequires:	qt5-build >= %{qtbase_ver}
+BuildRequires:	qt5-qmake >= %{qtbase_ver}
 BuildRequires:	rpmbuild(macros) >= 1.654
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-%define		_noautoreqdep	libGL.so.1 libGLU.so.1
-%define		_noautostrip	'.*_debug\\.so*'
-
 %define		specflags	-fno-strict-aliasing
-%define		_qtdir		%{_libdir}/qt5
+%define		qt5dir		%{_libdir}/qt5
 
 %description
-Qt5 XmlPatterns libraries.
+Qt is a cross-platform application and UI framework. Using Qt, you can
+write web-enabled applications once and deploy them across desktop,
+mobile and embedded systems without rewriting the source code.
 
-%package devel
-Summary:	The Qt5 XmlPatterns - development files
+This package contains Qt5 XmlPatterns libraries.
+
+%description -l pl.UTF-8
+Qt to wieloplatformowy szkielet aplikacji i interfejsów użytkownika.
+Przy użyciu Qt można pisać aplikacje powiązane z WWW i wdrażać je w
+systemach biurkowych, przenośnych i wbudowanych bez przepisywania kodu
+źródłowego.
+
+Ten pakiet zawiera biblioteki Qt5 XmlPatterns.
+
+%package -n Qt5XmlPatterns
+Summary:	The Qt5 XmlPatterns library
+Summary(pl.UTF-8):	Biblioteka Qt5 XmlPatterns
+Group:		Libraries
+Requires:	Qt5Core >= %{qtbase_ver}
+Obsoletes:	qt5-qtxmlpatterns
+
+%description -n Qt5XmlPatterns
+Qt5 XmlPatterns library.
+
+%description -n Qt5XmlPatterns -l pl.UTF_8
+Biblioteka Qt5 XmlPatterns.
+
+%package -n Qt5XmlPatterns-devel
+Summary:	Qt5 XmlPatterns library - development files
+Summary(pl.UTF-8):	Biblioteka Qt5 XmlPatterns - pliki programistyczne
 Group:		X11/Development/Libraries
-Requires:	%{name} = %{version}-%{release}
+Requires:	Qt5Core-devel >= %{qtbase_ver}
+Requires:	Qt5XmlPatterns = %{version}-%{release}
+Obsoletes:	qt5-qtxmlpatterns-devel
 
-%description devel
-Qt5 XmlPatterns - development files.
+%description -n Qt5XmlPatterns-devel
+Qt5 XmlPatterns library - development files.
+
+%description -n Qt5XmlPatterns-devel -l pl.UTF-8
+Biblioteka Qt5 XmlPatterns - pliki programistyczne.
 
 %package doc
-Summary:	The Qt5 XmlPatterns - docs
+Summary:	Qt5 XmlPatterns documentation in HTML format
+Summary(pl.UTF-8):	Dokumentacja do biblioteki Qt5 XmlPatterns w formacie HTML
 Group:		Documentation
 %if "%{_rpmversion}" >= "5"
 BuildArch:	noarch
 %endif
 
 %description doc
-Qt5 XmlPatterns - documentation.
+Qt5 XmlPatterns documentation in HTML format.
+
+%description doc -l pl.UTF-8
+Dokumentacja do biblioteki Qt5 XmlPatterns w formacie HTML.
+
+%package doc-qch
+Summary:	Qt5 XmlPatterns documentation in QCH format
+Summary(pl.UTF-8):	Dokumentacja do biblioteki Qt5 XmlPatterns w formacie QCH
+Group:		Documentation
+Requires:	qt5-doc-common >= %{qtbase_ver}
+%if "%{_rpmversion}" >= "5"
+BuildArch:	noarch
+%endif
+
+%description doc-qch
+Qt5 XmlPatterns documentation in QCH format.
+
+%description doc-qch -l pl.UTF-8
+Dokumentacja do biblioteki Qt5 XmlPatterns w formacie QCH.
 
 %package examples
 Summary:	Qt5 XmlPatterns examples
+Summary(pl.UTF-8):	Przykłady do biblioteki Qt5 XmlPatterns
 Group:		X11/Development/Libraries
 %if "%{_rpmversion}" >= "5"
 BuildArch:	noarch
 %endif
 
 %description examples
-Qt5 XmlPatterns - examples.
+Qt5 XmlPatterns examples.
+
+%description examples -l pl.UTF-8
+Przykłady do biblioteki Qt5 XmlPatterns.
 
 %prep
 %setup -q -n %{orgname}-opensource-src-%{version}
@@ -61,15 +121,20 @@ Qt5 XmlPatterns - examples.
 %build
 qmake-qt5
 %{__make}
-%{__make} docs
+%{__make} %{!?with_qch:html_}docs
 
 %install
 rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	INSTALL_ROOT=$RPM_BUILD_ROOT
 
-%{__make} install_docs \
+%{__make} install_%{!?with_qch:html_}docs \
 	INSTALL_ROOT=$RPM_BUILD_ROOT
+
+# useless symlinks
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/libQt5*.so.5.?
+# actually drop *.la, follow policy of not packaging them when *.pc exist
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/libQt5*.la
 
 # Prepare some files list
 ifecho() {
@@ -99,27 +164,32 @@ done
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post		-p /sbin/ldconfig
-%postun		-p /sbin/ldconfig
+%post	-n Qt5XmlPatterns -p /sbin/ldconfig
+%postun	-n Qt5XmlPatterns -p /sbin/ldconfig
 
 %files
 %defattr(644,root,root,755)
-%attr(755,root,root) %ghost %{_libdir}/libQt5XmlPatterns.so.?
-%attr(755,root,root) %{_libdir}/libQt5XmlPatterns.so.*.*
-%attr(755,root,root) %{_qtdir}/bin/xmlpatterns*
+%attr(755,root,root) %{_libdir}/libQt5XmlPatterns.so.*.*.*
+%attr(755,root,root) %ghost %{_libdir}/libQt5XmlPatterns.so.5
+%attr(755,root,root) %{qt5dir}/bin/xmlpatterns*
 
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libQt5XmlPatterns.so
-%{_libdir}/libQt5XmlPatterns.la
 %{_libdir}/libQt5XmlPatterns.prl
-%{_libdir}/cmake/Qt5XmlPatterns
 %{_includedir}/qt5/QtXmlPatterns
-%{_pkgconfigdir}/*.pc
-%{_qtdir}/mkspecs
+%{_pkgconfigdir}/Qt5XmlPatterns.pc
+%{_libdir}/cmake/Qt5XmlPatterns
+%{qt5dir}/mkspecs/modules/*.pri
 
 %files doc
 %defattr(644,root,root,755)
-%{_docdir}/qt5-doc
+%{_docdir}/qt5-doc/qtxmlpatterns
+
+%if %{with qch}
+%files doc-qch
+%defattr(644,root,root,755)
+%{_docdir}/qt5-doc/qtxmlpatterns.qch
+%endif
 
 %files examples -f examples.files
