@@ -57,10 +57,12 @@ Requires:	Qt5Network >= %{qtbase_ver}
 Obsoletes:	qt5-qtxmlpatterns
 
 %description -n Qt5XmlPatterns
-Qt5 XmlPatterns library.
+Qt5 XmlPatterns library provides support for XPath, XQuery, XSLT and
+XML Schema validation.
 
 %description -n Qt5XmlPatterns -l pl.UTF_8
-Biblioteka Qt5 XmlPatterns.
+Biblioteka Qt5 XmlPatterns zapewnia obsługę XPath, XQuery, XSLT oraz
+sprawdzanie poprawności wg XML Schema.
 
 %package -n Qt5XmlPatterns-devel
 Summary:	Qt5 XmlPatterns library - development files
