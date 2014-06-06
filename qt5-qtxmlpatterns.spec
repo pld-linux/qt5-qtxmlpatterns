@@ -11,7 +11,7 @@ Summary:	The Qt5 XmlPatterns
 Name:		qt5-%{orgname}
 Version:	5.3.0
 Release:	1
-License:	LGPL v2.1 or GPL v3.0
+License:	LGPL v2.1 with Digia Qt LGPL Exception v1.1 or GPL v3.0
 Group:		X11/Libraries
 Source0:	http://download.qt-project.org/official_releases/qt/5.3/%{version}/submodules/%{orgname}-opensource-src-%{version}.tar.xz
 # Source0-md5:	68c6e1311ecf8727368961739243d3b2
