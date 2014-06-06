@@ -9,14 +9,18 @@
 %define		qttools_ver	%{version}
 Summary:	The Qt5 XmlPatterns
 Name:		qt5-%{orgname}
-Version:	5.2.0
-Release:	0.1
+Version:	5.3.0
+Release:	1
 License:	LGPL v2.1 or GPL v3.0
 Group:		X11/Libraries
-Source0:	http://download.qt-project.org/official_releases/qt/5.2/%{version}/submodules/%{orgname}-opensource-src-%{version}.tar.xz
-# Source0-md5:	7c3e94cd04603c3f81e50d47daf5bbc7
+Source0:	http://download.qt-project.org/official_releases/qt/5.3/%{version}/submodules/%{orgname}-opensource-src-%{version}.tar.xz
+# Source0-md5:	68c6e1311ecf8727368961739243d3b2
 URL:		http://qt-project.org/
-BuildRequires:	qt5-qtbase-devel >= %{qtbase_ver}
+BuildRequires:	OpenGL-devel
+BuildRequires:	Qt5Core-devel >= %{qtbase_ver}
+BuildRequires:	Qt5Gui-devel >= %{qtbase_ver}
+BuildRequires:	Qt5Network-devel >= %{qtbase_ver}
+BuildRequires:	Qt5Widgets-devel >= %{qtbase_ver}
 %if %{with qch}
 BuildRequires:	qt5-assistant >= %{qttools_ver}
 %endif
@@ -50,6 +54,7 @@ Summary:	The Qt5 XmlPatterns library
 Summary(pl.UTF-8):	Biblioteka Qt5 XmlPatterns
 Group:		Libraries
 Requires:	Qt5Core >= %{qtbase_ver}
+Requires:	Qt5Network >= %{qtbase_ver}
 Obsoletes:	qt5-qtxmlpatterns
 
 %description -n Qt5XmlPatterns
@@ -63,6 +68,7 @@ Summary:	Qt5 XmlPatterns library - development files
 Summary(pl.UTF-8):	Biblioteka Qt5 XmlPatterns - pliki programistyczne
 Group:		X11/Development/Libraries
 Requires:	Qt5Core-devel >= %{qtbase_ver}
+Requires:	Qt5Network-devel >= %{qtbase_ver}
 Requires:	Qt5XmlPatterns = %{version}-%{release}
 Obsoletes:	qt5-qtxmlpatterns-devel
 
@@ -136,12 +142,16 @@ rm -rf $RPM_BUILD_ROOT
 # actually drop *.la, follow policy of not packaging them when *.pc exist
 %{__rm} $RPM_BUILD_ROOT%{_libdir}/libQt5*.la
 
+# symlinks in system bin dir
+install -d $RPM_BUILD_ROOT%{_bindir}
+cd $RPM_BUILD_ROOT%{_bindir}
+ln -sf ../%{_lib}/qt5/bin/xmlpatterns xmlpatterns-qt5
+ln -sf ../%{_lib}/qt5/bin/xmlpatternsvalidator xmlpatternsvalidator-qt5
+cd -
+
 # Prepare some files list
 ifecho() {
-	RESULT=`echo $RPM_BUILD_ROOT$2 2>/dev/null`
-	[ "$RESULT" == "" ] && return # XXX this is never true due $RPM_BUILD_ROOT being set
-	r=`echo $RESULT | awk '{ print $1 }'`
-
+	r="$RPM_BUILD_ROOT$2"
 	if [ -d "$r" ]; then
 		echo "%%dir $2" >> $1.files
 	elif [ -x "$r" ] ; then
@@ -154,12 +164,15 @@ ifecho() {
 		return 1
 	fi
 }
+ifecho_tree() {
+	ifecho $1 $2
+	for f in `find $RPM_BUILD_ROOT$2 -printf "%%P "`; do
+		ifecho $1 $2/$f
+	done
+}
 
 echo "%defattr(644,root,root,755)" > examples.files
-ifecho examples %{_examplesdir}/qt5
-for f in `find $RPM_BUILD_ROOT%{_examplesdir}/qt5 -printf "%%P "`; do
-	ifecho examples %{_examplesdir}/qt5/$f
-done
+ifecho_tree examples %{_examplesdir}/qt5/xmlpatterns
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -167,20 +180,25 @@ rm -rf $RPM_BUILD_ROOT
 %post	-n Qt5XmlPatterns -p /sbin/ldconfig
 %postun	-n Qt5XmlPatterns -p /sbin/ldconfig
 
-%files
+%files -n Qt5XmlPatterns
 %defattr(644,root,root,755)
+%doc LGPL_EXCEPTION.txt dist/changes-*
 %attr(755,root,root) %{_libdir}/libQt5XmlPatterns.so.*.*.*
 %attr(755,root,root) %ghost %{_libdir}/libQt5XmlPatterns.so.5
-%attr(755,root,root) %{qt5dir}/bin/xmlpatterns*
+%attr(755,root,root) %{_bindir}/xmlpatterns-qt5
+%attr(755,root,root) %{_bindir}/xmlpatternsvalidator-qt5
+%attr(755,root,root) %{qt5dir}/bin/xmlpatterns
+%attr(755,root,root) %{qt5dir}/bin/xmlpatternsvalidator
 
-%files devel
+%files -n Qt5XmlPatterns-devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libQt5XmlPatterns.so
 %{_libdir}/libQt5XmlPatterns.prl
 %{_includedir}/qt5/QtXmlPatterns
 %{_pkgconfigdir}/Qt5XmlPatterns.pc
 %{_libdir}/cmake/Qt5XmlPatterns
-%{qt5dir}/mkspecs/modules/*.pri
+%{qt5dir}/mkspecs/modules/qt_lib_xmlpatterns.pri
+%{qt5dir}/mkspecs/modules/qt_lib_xmlpatterns_private.pri
 
 %files doc
 %defattr(644,root,root,755)
@@ -193,3 +211,6 @@ rm -rf $RPM_BUILD_ROOT
 %endif
 
 %files examples -f examples.files
+%defattr(644,root,root,755)
+# XXX: dir shared with qt5-qtbase-examples
+%dir %{_examplesdir}/qt5
