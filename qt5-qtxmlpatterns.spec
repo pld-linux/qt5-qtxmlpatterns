@@ -83,6 +83,7 @@ Biblioteka Qt5 XmlPatterns - pliki programistyczne.
 Summary:	Qt5 XmlPatterns documentation in HTML format
 Summary(pl.UTF-8):	Dokumentacja do biblioteki Qt5 XmlPatterns w formacie HTML
 Group:		Documentation
+Requires:	qt5-doc-common >= %{qtbase_ver}
 %if "%{_rpmversion}" >= "5"
 BuildArch:	noarch
 %endif
