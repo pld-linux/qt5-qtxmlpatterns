@@ -5,7 +5,7 @@
 
 %define		orgname		qtxmlpatterns
 %define		qtbase_ver	%{version}
-%define		qttools_ver	%{version}
+%define		qttools_ver	5.4
 Summary:	The Qt5 XmlPatterns library
 Summary(pl.UTF-8):	Biblioteka Qt5 XmlPatterns
 Name:		qt5-%{orgname}
