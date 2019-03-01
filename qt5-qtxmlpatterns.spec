@@ -9,14 +9,14 @@
 Summary:	The Qt5 XmlPatterns library
 Summary(pl.UTF-8):	Biblioteka Qt5 XmlPatterns
 Name:		qt5-%{orgname}
-Version:	5.11.1
+Version:	5.12.1
 Release:	1
 License:	LGPL v2.1 with Digia Qt LGPL Exception v1.1 or GPL v3.0
 Group:		Libraries
-Source0:	http://download.qt.io/official_releases/qt/5.11/%{version}/submodules/%{orgname}-everywhere-src-%{version}.tar.xz
-# Source0-md5:	02aacaf696541ceb478b1f33be567aa0
-Source1:	http://download.qt.io/official_releases/qt/5.11/%{version}/submodules/qttranslations-everywhere-src-%{version}.tar.xz
-# Source1-md5:	67c0dbd61c2b92552b5339d82a94b1a8
+Source0:	http://download.qt.io/official_releases/qt/5.12/%{version}/submodules/%{orgname}-everywhere-src-%{version}.tar.xz
+# Source0-md5:	bb92bb42967776246ceb7cd1337ea86e
+Source1:	http://download.qt.io/official_releases/qt/5.12/%{version}/submodules/qttranslations-everywhere-src-%{version}.tar.xz
+# Source1-md5:	045ad1eda4d3a272b24b6c60a06b313f
 URL:		http://www.qt.io/
 BuildRequires:	OpenGL-devel
 BuildRequires:	Qt5Core-devel >= %{qtbase_ver}
@@ -32,6 +32,7 @@ BuildRequires:	qt5-qmake >= %{qtbase_ver}
 BuildRequires:	rpmbuild(macros) >= 1.654
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
+Obsoletes:	Qt5Quick-xmllistmodel < 5.12.1
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		specflags	-fno-strict-aliasing
@@ -156,7 +157,7 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} -C qttranslations-everywhere-src-%{version} install \
 	INSTALL_ROOT=$RPM_BUILD_ROOT
 # keep only qtxmlpatterns
-%{__rm} $RPM_BUILD_ROOT%{_datadir}/qt5/translations/{assistant,designer,linguist,qmlviewer,qt,qtbase,qtconnectivity,qtdeclarative,qtlocation,qtmultimedia,qtquick1,qtquickcontrols,qtquickcontrols2,qtserialport,qtscript,qtwebengine,qtwebsockets}_*.qm
+%{__rm} $RPM_BUILD_ROOT%{_datadir}/qt5/translations/{assistant,designer,linguist,qt,qtbase,qtconnectivity,qtdeclarative,qtlocation,qtmultimedia,qtquickcontrols,qtquickcontrols2,qtserialport,qtscript,qtwebengine,qtwebsockets}_*.qm
 %endif
 
 # useless symlinks
@@ -225,6 +226,11 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{_bindir}/xmlpatternsvalidator-qt5
 %attr(755,root,root) %{qt5dir}/bin/xmlpatterns
 %attr(755,root,root) %{qt5dir}/bin/xmlpatternsvalidator
+
+%dir %{qt5dir}/qml/QtQuick/XmlListModel
+%{qt5dir}/qml/QtQuick/XmlListModel/libqmlxmllistmodelplugin.so
+%{qt5dir}/qml/QtQuick/XmlListModel/plugins.qmltypes
+%{qt5dir}/qml/QtQuick/XmlListModel/qmldir
 
 %files -n Qt5XmlPatterns-devel
 %defattr(644,root,root,755)
