@@ -2,6 +2,7 @@
 # Conditional build:
 %bcond_without	doc	# Documentation
 %bcond_without	qm	# QM translations
+%bcond_without	qml	# requires Qt5Qml module
 
 %define		orgname		qtxmlpatterns
 %define		qtbase_ver	%{version}
@@ -22,6 +23,7 @@ BuildRequires:	OpenGL-devel
 BuildRequires:	Qt5Core-devel >= %{qtbase_ver}
 BuildRequires:	Qt5Gui-devel >= %{qtbase_ver}
 BuildRequires:	Qt5Network-devel >= %{qtbase_ver}
+%{?with_qml:BuildRequires:	Qt5Qml-devel >= %{qtbase_ver}}
 BuildRequires:	Qt5Widgets-devel >= %{qtbase_ver}
 %if %{with doc}
 BuildRequires:	qt5-assistant >= %{qttools_ver}
@@ -227,10 +229,12 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{qt5dir}/bin/xmlpatterns
 %attr(755,root,root) %{qt5dir}/bin/xmlpatternsvalidator
 
+%if %{with qml}
 %dir %{qt5dir}/qml/QtQuick/XmlListModel
 %{qt5dir}/qml/QtQuick/XmlListModel/libqmlxmllistmodelplugin.so
 %{qt5dir}/qml/QtQuick/XmlListModel/plugins.qmltypes
 %{qt5dir}/qml/QtQuick/XmlListModel/qmldir
+%endif
 
 %files -n Qt5XmlPatterns-devel
 %defattr(644,root,root,755)
