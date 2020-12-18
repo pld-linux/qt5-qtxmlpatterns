@@ -2,28 +2,29 @@
 # Conditional build:
 %bcond_without	doc	# Documentation
 %bcond_without	qm	# QM translations
-%bcond_without	qml	# requires Qt5Qml module
+%bcond_without	qml	# Quick xmllistmodel plugin
 
-%define		orgname		qtxmlpatterns
-%define		qtbase_ver	%{version}
-%define		qttools_ver	5.8
+%define		orgname			qtxmlpatterns
+%define		qtbase_ver		%{version}
+%define		qttools_ver		5.9
+%define		qtdeclarative_ver	%{version}
 Summary:	The Qt5 XmlPatterns library
 Summary(pl.UTF-8):	Biblioteka Qt5 XmlPatterns
 Name:		qt5-%{orgname}
 Version:	5.15.2
 Release:	2
-License:	LGPL v2.1 with Digia Qt LGPL Exception v1.1 or GPL v3.0
+License:	LGPL v3 or GPL v2 or GPL v3 or commercial
 Group:		Libraries
 Source0:	http://download.qt.io/official_releases/qt/5.15/%{version}/submodules/%{orgname}-everywhere-src-%{version}.tar.xz
 # Source0-md5:	ef96631d72399cfa495f223ef21bb039
 Source1:	http://download.qt.io/official_releases/qt/5.15/%{version}/submodules/qttranslations-everywhere-src-%{version}.tar.xz
 # Source1-md5:	9b66cdb64402e8fd9e843f8a7120abb1
-URL:		http://www.qt.io/
+URL:		https://www.qt.io/
 BuildRequires:	OpenGL-devel
 BuildRequires:	Qt5Core-devel >= %{qtbase_ver}
 BuildRequires:	Qt5Gui-devel >= %{qtbase_ver}
 BuildRequires:	Qt5Network-devel >= %{qtbase_ver}
-%{?with_qml:BuildRequires:	Qt5Qml-devel >= %{qtbase_ver}}
+%{?with_qml:BuildRequires:	Qt5Qml-devel >= %{qtdeclarative_ver}}
 BuildRequires:	Qt5Widgets-devel >= %{qtbase_ver}
 %if %{with doc}
 BuildRequires:	qt5-assistant >= %{qttools_ver}
@@ -31,10 +32,9 @@ BuildRequires:	qt5-assistant >= %{qttools_ver}
 BuildRequires:	qt5-build >= %{qtbase_ver}
 %{?with_qm:BuildRequires:	qt5-linguist >= %{qttools_ver}}
 BuildRequires:	qt5-qmake >= %{qtbase_ver}
-BuildRequires:	rpmbuild(macros) >= 1.654
+BuildRequires:	rpmbuild(macros) >= 1.752
 BuildRequires:	tar >= 1:1.22
 BuildRequires:	xz
-Obsoletes:	Qt5Quick-xmllistmodel < 5.12.1
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %define		specflags	-fno-strict-aliasing
@@ -86,14 +86,28 @@ Qt5 XmlPatterns library - development files.
 %description -n Qt5XmlPatterns-devel -l pl.UTF-8
 Biblioteka Qt5 XmlPatterns - pliki programistyczne.
 
+%package -n Qt5Quick-xmllistmodel
+Summary:	XmlListModel plugin for Qt5 Quick
+Summary(pl.UTF-8):	Wtyczka XmlListModel dla Qt5 Quick
+Group:		X11/Libraries
+Requires:	Qt5Qml >= %{qtdeclarative_ver}
+Requires:	Qt5Quick >= %{qtdeclarative_ver}
+Requires:	Qt5XmlPatterns = %{version}-%{release}
+
+%description -n Qt5Quick-xmllistmodel
+XmlListModel plugin for Qt5 Quick provides QML types for creating
+models from XML data.
+
+%description -n Qt5Quick-xmllistmodel -l pl.UTF-8
+Wtyczka XmlListModel dla Qt5 Quick dostarcza typy QML do tworzenia
+modeli z danych XML.
+
 %package doc
 Summary:	Qt5 XmlPatterns documentation in HTML format
 Summary(pl.UTF-8):	Dokumentacja do biblioteki Qt5 XmlPatterns w formacie HTML
 Group:		Documentation
 Requires:	qt5-doc-common >= %{qtbase_ver}
-%if "%{_rpmversion}" >= "5"
-BuildArch:	noarch
-%endif
+%{?noarchpackage}
 
 %description doc
 Qt5 XmlPatterns documentation in HTML format.
@@ -106,9 +120,7 @@ Summary:	Qt5 XmlPatterns documentation in QCH format
 Summary(pl.UTF-8):	Dokumentacja do biblioteki Qt5 XmlPatterns w formacie QCH
 Group:		Documentation
 Requires:	qt5-doc-common >= %{qtbase_ver}
-%if "%{_rpmversion}" >= "5"
-BuildArch:	noarch
-%endif
+%{?noarchpackage}
 
 %description doc-qch
 Qt5 XmlPatterns documentation in QCH format.
@@ -120,9 +132,7 @@ Dokumentacja do biblioteki Qt5 XmlPatterns w formacie QCH.
 Summary:	Qt5 XmlPatterns examples
 Summary(pl.UTF-8):	Przykłady do biblioteki Qt5 XmlPatterns
 Group:		X11/Development/Libraries
-%if "%{_rpmversion}" >= "5"
-BuildArch:	noarch
-%endif
+%{?noarchpackage}
 
 %description examples
 Qt5 XmlPatterns examples.
@@ -229,13 +239,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755,root,root) %{qt5dir}/bin/xmlpatterns
 %attr(755,root,root) %{qt5dir}/bin/xmlpatternsvalidator
 
-%if %{with qml}
-%dir %{qt5dir}/qml/QtQuick/XmlListModel
-%{qt5dir}/qml/QtQuick/XmlListModel/libqmlxmllistmodelplugin.so
-%{qt5dir}/qml/QtQuick/XmlListModel/plugins.qmltypes
-%{qt5dir}/qml/QtQuick/XmlListModel/qmldir
-%endif
-
 %files -n Qt5XmlPatterns-devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libQt5XmlPatterns.so
@@ -245,6 +248,15 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/cmake/Qt5XmlPatterns
 %{qt5dir}/mkspecs/modules/qt_lib_xmlpatterns.pri
 %{qt5dir}/mkspecs/modules/qt_lib_xmlpatterns_private.pri
+
+%if %{with qml}
+%files -n Qt5Quick-xmllistmodel
+%defattr(644,root,root,755)
+%dir %{qt5dir}/qml/QtQuick/XmlListModel
+%{qt5dir}/qml/QtQuick/XmlListModel/libqmlxmllistmodelplugin.so
+%{qt5dir}/qml/QtQuick/XmlListModel/plugins.qmltypes
+%{qt5dir}/qml/QtQuick/XmlListModel/qmldir
+%endif
 
 %if %{with doc}
 %files doc
