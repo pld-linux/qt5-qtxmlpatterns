@@ -61,7 +61,7 @@ Summary(pl.UTF-8):	Biblioteka Qt5 XmlPatterns
 Group:		Libraries
 Requires:	Qt5Core >= %{qtbase_ver}
 Requires:	Qt5Network >= %{qtbase_ver}
-Obsoletes:	qt5-qtxmlpatterns
+Obsoletes:	qt5-qtxmlpatterns < 5.3.0
 
 %description -n Qt5XmlPatterns
 Qt5 XmlPatterns library provides support for XPath, XQuery, XSLT and
@@ -78,7 +78,7 @@ Group:		Development/Libraries
 Requires:	Qt5Core-devel >= %{qtbase_ver}
 Requires:	Qt5Network-devel >= %{qtbase_ver}
 Requires:	Qt5XmlPatterns = %{version}-%{release}
-Obsoletes:	qt5-qtxmlpatterns-devel
+Obsoletes:	qt5-qtxmlpatterns-devel < 5.3.0
 
 %description -n Qt5XmlPatterns-devel
 Qt5 XmlPatterns library - development files.
