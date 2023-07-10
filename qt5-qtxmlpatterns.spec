@@ -60,7 +60,7 @@ Ten pakiet zawiera biblioteki Qt5 XmlPatterns.
 Summary:	The Qt5 XmlPatterns library
 Summary(pl.UTF-8):	Biblioteka Qt5 XmlPatterns
 Group:		Libraries
-Requires:	Qt5Core >= %{qtbase_ver}
+%requires_eq_to	Qt5Core Qt5Core-devel
 Requires:	Qt5Network >= %{qtbase_ver}
 Obsoletes:	qt5-qtxmlpatterns < 5.3.0
 
