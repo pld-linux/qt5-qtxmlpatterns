@@ -11,14 +11,14 @@
 Summary:	The Qt5 XmlPatterns library
 Summary(pl.UTF-8):	Biblioteka Qt5 XmlPatterns
 Name:		qt5-%{orgname}
-Version:	5.15.11
+Version:	5.15.12
 Release:	1
 License:	LGPL v3 or GPL v2 or GPL v3 or commercial
 Group:		Libraries
 Source0:	https://download.qt.io/official_releases/qt/5.15/%{version}/submodules/%{orgname}-everywhere-opensource-src-%{version}.tar.xz
-# Source0-md5:	98e3224c32d71d048c4b31eb77e4b3da
+# Source0-md5:	5e178523efd3bcc6e5601670e9ba4bd8
 Source1:	https://download.qt.io/official_releases/qt/5.15/%{version}/submodules/qttranslations-everywhere-opensource-src-%{version}.tar.xz
-# Source1-md5:	541be36768847f531abb3859806dbc89
+# Source1-md5:	6b5974f2733ed0fe3cec06c851005e07
 URL:		https://www.qt.io/
 BuildRequires:	OpenGL-devel
 BuildRequires:	Qt5Core-devel >= %{qtbase_ver}
